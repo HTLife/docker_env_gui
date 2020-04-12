@@ -41,7 +41,7 @@ function drunnvidia()
         --env="DISPLAY" \
         --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
         ${IMAGE_NAME}:latest \
-        /bin/sh -c "while true; do sleep 10; done"
+        /bin/sh -c "sed -i "s/CMD_PROMPT_PREFIX=.*$/CMD_PROMPT_PREFIX=$1/" /root/.bashrc && while true; do sleep 10; done"
     fi
     addAutoComplete
 }
@@ -57,7 +57,7 @@ function drunintel
             -e DISPLAY=$DISPLAY \
             -v /tmp/.X11-unix:/tmp/.X11-unix \
             ${IMAGE_NAME}:latest \
-            /bin/sh -c "while true; do sleep 10; done"
+            /bin/sh -c "sed -i "s/CMD_PROMPT_PREFIX=.*$/CMD_PROMPT_PREFIX=$1/" /root/.bashrc && while true; do sleep 10; done"
     fi
     addAutoComplete
 }

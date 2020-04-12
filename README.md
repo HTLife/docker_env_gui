@@ -12,14 +12,14 @@ source setup.bash
 dbuild
 
 # Start contianer (Intel GPU)
-drunintel
+drunintel <CONTAINER_NAME>
 
 # Start contianer (Nvidia GPU)
-drunnvidia
+drunnvidia <CONTAINER_NAME>
 
 # Login into container
-dlogin
+dlogin <CONTAINER_NAME>
 
 # Stop and remove container
-drm
+drm <CONTAINER_NAME>
 ```
