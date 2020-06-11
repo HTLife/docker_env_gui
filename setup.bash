@@ -1,5 +1,6 @@
 #!/bin/bash
-IMAGE_NAME=ubuntu18gui
+IMAGE_NAME=tseanliu/docker_env_gui:ubuntu18
+#IMAGE_NAME_ROS    tseanliu/docker_env_gui:ubuntu18_melodic
 CONTAINER_NAME=ubuntu18gui
 xhost +
 
@@ -40,7 +41,23 @@ function drunnvidia()
         --env="QT_X11_NO_MITSHM=1" \
         --env="DISPLAY" \
         --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-        ${IMAGE_NAME}:latest \
+        ${IMAGE_NAME} \
+        /bin/sh -c "sed -i "s/CMD_PROMPT_PREFIX=.*$/CMD_PROMPT_PREFIX=$1/" /root/.bashrc && while true; do sleep 10; done"
+    fi
+    addAutoComplete
+}
+
+function drunCarto()
+{
+    checkArg $1
+    if [ "$?" -eq 1 ]; then
+    ## Minimum setting
+    docker run --runtime=nvidia -d \
+        --name=${CONTAINER_NAME} \
+        --env="QT_X11_NO_MITSHM=1" \
+        --env="DISPLAY" \
+        --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+        tseanliu/docker_env_gui:ubuntu18_melodic_cartographer \
         /bin/sh -c "sed -i "s/CMD_PROMPT_PREFIX=.*$/CMD_PROMPT_PREFIX=$1/" /root/.bashrc && while true; do sleep 10; done"
     fi
     addAutoComplete
@@ -56,7 +73,7 @@ function drunintel
             --name=${CONTAINER_NAME} \
             -e DISPLAY=$DISPLAY \
             -v /tmp/.X11-unix:/tmp/.X11-unix \
-            ${IMAGE_NAME}:latest \
+            ${IMAGE_NAME} \
             /bin/sh -c "sed -i "s/CMD_PROMPT_PREFIX=.*$/CMD_PROMPT_PREFIX=$1/" /root/.bashrc && while true; do sleep 10; done"
     fi
     addAutoComplete
@@ -88,11 +105,28 @@ function drmall
     docker rm ${list}
 }
 
-function dbuild
+function prune
 {
     docker container prune
     docker image prune
-    docker build -t ${IMAGE_NAME} .
+}
+
+function dbuild
+{
+    prune
+    docker build -f Dockerfile.base -t tseanliu/docker_env_gui:ubuntu18 .
+}
+
+function dbuildRos
+{
+    prune
+    docker build -f Dockerfile.ros -t tseanliu/docker_env_gui:ubuntu18_melodic .
+}
+
+function dbuildCartographer
+{
+    prune
+    docker build -f Dockerfile.cartographer -t tseanliu/docker_env_gui:ubuntu18_melodic_cartographer .
 }
 
 function dlogin

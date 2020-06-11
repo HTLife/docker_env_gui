@@ -1,0 +1,22 @@
+FROM tseanliu/docker_env_gui:ubuntu18_melodic
+
+RUN apt-get update && apt-get install -y \
+    python-wstool \
+    python-rosdep \
+    ninja-build
+
+RUN mkdir /root/catkin_ws
+WORKDIR /root/catkin_ws
+RUN wstool init src
+RUN wstool merge -t src https://raw.githubusercontent.com/googlecartographer/cartographer_ros/master/cartographer_ros.rosinstall
+RUN wstool update -t src
+
+RUN src/cartographer/scripts/install_proto3.sh
+RUN rm /etc/ros/rosdep/sources.list.d/20-default.list
+ARG ROS_DISTRO=melodic
+RUN rosdep init \
+    && rosdep update \
+    && rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y
+
+RUN /bin/bash -c "source /opt/ros/melodic/setup.bash \
+     && catkin_make_isolated --install --use-ninja"
