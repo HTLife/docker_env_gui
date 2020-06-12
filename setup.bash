@@ -1,6 +1,6 @@
 #!/bin/bash
-IMAGE_NAME=tseanliu/docker_env_gui:ubuntu18_melodic_cartographer
-CONTAINER_NAME=cartographer
+IMAGE_NAME=image
+CONTAINER_NAME=container
 
 MOUNT_DOWNLOAD=/root/Downloads
 
