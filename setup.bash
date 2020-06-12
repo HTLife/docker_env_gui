@@ -1,7 +1,9 @@
 #!/bin/bash
-IMAGE_NAME=tseanliu/docker_env_gui:ubuntu18
-#IMAGE_NAME_ROS    tseanliu/docker_env_gui:ubuntu18_melodic
-CONTAINER_NAME=ubuntu18gui
+IMAGE_NAME=tseanliu/docker_env_gui:ubuntu18_melodic_cartographer
+CONTAINER_NAME=cartographer
+
+MOUNT_DOWNLOAD=/root/Downloads
+
 xhost +
 
 
@@ -11,13 +13,23 @@ NC='\033[0m' # No Color
 # Check argument
 function checkArg()
 {
-    if [ -z $1 ]
+    if [ -z $1 ];
     then
         printf "${RED}Please set container NAME${NC}\n"
         return 0
     else
         printf "Container name: $1\n" 
-        CONTAINER_NAME=$1
+        CONTAINER_NAME=cartographer
+	if [ $# -eq 2 ];
+	then
+	    if [ -z $2 ];
+	    then
+	        printf "No image given, using standard image: ${IMAGE_NAME}\n"
+	    else
+	        printf "Using image: $2\n"
+	        IMAGE_NAME=tseanliu/docker_env_gui:ubuntu18_melodic_cartographer
+	    fi
+	fi
         return 1
     fi
 }
@@ -41,23 +53,9 @@ function drunnvidia()
         --env="QT_X11_NO_MITSHM=1" \
         --env="DISPLAY" \
         --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+        --volume="$HOME/Downloads:$MOUNT_DOWNLOAD" \
+        --volume="$HOME/.ssh:/root/.ssh" \
         ${IMAGE_NAME} \
-        /bin/sh -c "sed -i "s/CMD_PROMPT_PREFIX=.*$/CMD_PROMPT_PREFIX=$1/" /root/.bashrc && while true; do sleep 10; done"
-    fi
-    addAutoComplete
-}
-
-function drunCarto()
-{
-    checkArg $1
-    if [ "$?" -eq 1 ]; then
-    ## Minimum setting
-    docker run --runtime=nvidia -d \
-        --name=${CONTAINER_NAME} \
-        --env="QT_X11_NO_MITSHM=1" \
-        --env="DISPLAY" \
-        --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-        tseanliu/docker_env_gui:ubuntu18_melodic_cartographer \
         /bin/sh -c "sed -i "s/CMD_PROMPT_PREFIX=.*$/CMD_PROMPT_PREFIX=$1/" /root/.bashrc && while true; do sleep 10; done"
     fi
     addAutoComplete
@@ -114,22 +112,10 @@ function prune
 function dbuild
 {
     prune
-    docker build -f Dockerfile.base -t tseanliu/docker_env_gui:ubuntu18 .
+    docker build -t ${IMAGE_NAME} .
 }
 
-function dbuildRos
-{
-    prune
-    docker build -f Dockerfile.ros -t tseanliu/docker_env_gui:ubuntu18_melodic .
-}
-
-function dbuildCartographer
-{
-    prune
-    docker build -f Dockerfile.cartographer -t tseanliu/docker_env_gui:ubuntu18_melodic_cartographer .
-}
-
-function dlogin
+function dexec
 {
     checkArg $1
     if [ "$?" -eq 1 ]; then

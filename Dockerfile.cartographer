@@ -1,3 +1,4 @@
+# docker build -f Dockerfile.cartographer -t tseanliu/docker_env_gui:ubuntu18_melodic_cartographer .
 FROM tseanliu/docker_env_gui:ubuntu18_melodic
 
 RUN apt-get update && apt-get install -y \

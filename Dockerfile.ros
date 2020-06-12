@@ -1,3 +1,4 @@
+# docker build -f Dockerfile.ros -t tseanliu/docker_env_gui:ubuntu18_melodic .
 FROM tseanliu/docker_env_gui:ubuntu18
 
 # prevent tzdata ask questions

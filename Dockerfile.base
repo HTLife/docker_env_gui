@@ -1,3 +1,5 @@
+# docker build -f Dockerfile.base -t tseanliu/docker_env_gui:ubuntu18 .
+
 FROM ubuntu:18.04
 
 # nvidia-container-runtime
@@ -14,3 +16,4 @@ COPY ./assets/bashrc /root/.bashrc
 COPY ./assets/inputrc /root/.inputrc
 
 WORKDIR /home
+
