@@ -47,8 +47,8 @@ function drunnvidia()
 {
     checkArg $1
     if [ "$?" -eq 1 ]; then
-    ## Minimum setting
-    docker run --runtime=nvidia -d \
+    ## Minimum setting  # --runtime=nvidia
+    docker run --gpus all -d \
         --name=${CONTAINER_NAME} \
         --env="QT_X11_NO_MITSHM=1" \
         --env="DISPLAY" \
