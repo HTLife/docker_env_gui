@@ -1,4 +1,4 @@
-Run kaibo code without native installation
+Run code without native installation
 
 
 # Getting start
@@ -8,18 +8,23 @@ Run kaibo code without native installation
 docker login
 source setup.bash
 
+
+export IMAGE_NAME=tseanliu/docker_env_gui:ubuntu18_melodic
+export CONTAINER_NAME=ubuntu18_melodic
+docker pull $IMAGE_NAME
+
 # Build docker image
 dbuild
 
 # Start contianer (Intel GPU)
-drunintel <CONTAINER_NAME>
+drunintel $CONTAINER_NAME
 
 # Start contianer (Nvidia GPU)
-drunnvidia <CONTAINER_NAME>
+drunnvidia $CONTAINER_NAME
 
 # Login into container
-dlogin <CONTAINER_NAME>
+dexec $CONTAINER_NAME
 
 # Stop and remove container
-drm <CONTAINER_NAME>
+drm $CONTAINER_NAME
 ```
