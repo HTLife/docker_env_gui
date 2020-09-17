@@ -1,0 +1,14 @@
+# docker build -f Dockerfile.meshlab -t tseanliu/docker_env_gui:ubuntu20_meshlab .
+FROM tseanliu/docker_env_gui:ubuntu20
+
+WORKDIR /home
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y tzdata && rm -rf /var/lib/apt/lists/*
+# timezone setting
+ENV TZ=Asia/Tokyo 
+
+# install useful tool
+RUN apt-get update && apt-get install -y git vim cmake && rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/HTLife/meshlab?organization=HTLife&organization=HTLife
