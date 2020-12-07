@@ -8,23 +8,18 @@ Run code without native installation
 docker login
 source setup.bash
 
-
-export IMAGE_NAME=tseanliu/docker_env_gui:ubuntu18_melodic
-export CONTAINER_NAME=ubuntu18_melodic
-docker pull $IMAGE_NAME
-
 # Build docker image
-dbuild
+dbuild DockerfilePath tagname
 
 # Start contianer (Intel GPU)
-drunintel $CONTAINER_NAME
+drunintel tseanliu/docker_env_gui:ubuntu18_melodic u18_melodic
 
 # Start contianer (Nvidia GPU)
-drunnvidia $CONTAINER_NAME
+drunnvidia tseanliu/docker_env_gui:ubuntu18_melodic u18_melodic
 
 # Login into container
-dexec $CONTAINER_NAME
+dexec u18_melodic
 
 # Stop and remove container
-drm $CONTAINER_NAME
+drm u18_melodic
 ```
