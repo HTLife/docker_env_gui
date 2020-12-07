@@ -57,7 +57,7 @@ function drunintel
 # Stop and remove container
 function drm 
 {
-    if [ "$?" -eq 1 ]; then
+    if [ "$#" -eq 1 ]; then
         echo "Stopping $1"
         docker stop $1
         echo "Removing $1"
