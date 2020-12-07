@@ -6,7 +6,7 @@ Run code without native installation
 ## Setup environment
 ```bash
 docker login
-source setup.bash
+bash install.sh
 
 # Build docker image
 dbuild DockerfilePath tagname
