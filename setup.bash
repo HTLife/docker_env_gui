@@ -89,7 +89,7 @@ function dbuild
 {
     if [ "$#" -eq 2 ]; then
         prune
-        docker build -f $1 -t $2 .
+        docker build --build-arg your_name=$USER -f $1 -t $2 .
     else
         echo "Syntax: dbuild Dockerfile tagname"
     fi
@@ -97,7 +97,7 @@ function dbuild
 
 function dexec
 {
-    if [ "$?" -eq 1 ]; then
+    if [ "$#" -eq 1 ]; then
         docker exec -it $1 bash
     else
         echo "Related container names:"
