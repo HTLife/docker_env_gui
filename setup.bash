@@ -1,38 +1,8 @@
 #!/bin/bash
-IMAGE_NAME=image
-CONTAINER_NAME=container
-
-MOUNT_DOWNLOAD=/root/Downloads
-
 xhost +
-
 
 RED='\033[0;31m'
 NC='\033[0m' # No Color
-
-# Check argument
-function checkArg()
-{
-    if [ -z $1 ];
-    then
-        printf "${RED}Please set container NAME${NC}\n"
-        return 0
-    else
-        printf "Container name: $1\n" 
-        CONTAINER_NAME=cartographer
-	if [ $# -eq 2 ];
-	then
-	    if [ -z $2 ];
-	    then
-	        printf "No image given, using standard image: ${IMAGE_NAME}\n"
-	    else
-	        printf "Using image: $2\n"
-	        IMAGE_NAME=tseanliu/docker_env_gui:ubuntu18_melodic_cartographer
-	    fi
-	fi
-        return 1
-    fi
-}
 
 function addAutoComplete()
 {
@@ -42,50 +12,56 @@ function addAutoComplete()
     complete -W "${list}" drm
 }
 
+_getSupportImages()
+{
+    COMPREPLY=(".")
+    COMPREPLY+=("tseanliu/docker_env_gui:ubuntu18")
+    COMPREPLY+=("tseanliu/docker_env_gui:ubuntu18_melodic")
+    COMPREPLY+=("tseanliu/docker_env_gui:ubuntu20_noetic")
+}
+complete -F _getSupportImages drunintel
+
 # Run docker on PC with Nvidia GPU
 function drunnvidia()
 {
-    checkArg $1
-    if [ "$?" -eq 1 ]; then
-    ## Minimum setting  # --runtime=nvidia
+    if [ "$?" -eq 2 ]; then
     docker run --gpus all -d \
-        --name=${CONTAINER_NAME} \
+        --name="$2" \
         --env="QT_X11_NO_MITSHM=1" \
         --env="DISPLAY" \
         --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-        --volume="$HOME/Downloads:$MOUNT_DOWNLOAD" \
         --volume="$HOME/.ssh:/root/.ssh" \
-        ${IMAGE_NAME} \
-        /bin/sh -c "sed -i "s/CMD_PROMPT_PREFIX=.*$/CMD_PROMPT_PREFIX=$1/" /root/.bashrc && while true; do sleep 10; done"
+        --volume="$HOME/Downloads:/home/Downloads" \
+        "$1" \
+        /bin/sh -c "sed -i "s/CMD_PROMPT_PREFIX=.*$/CMD_PROMPT_PREFIX=$2/" /root/.bashrc && while true; do sleep 10; done"
     fi
-    addAutoComplete
 }
 
 # Run docker on PC with Intel GPU
 function drunintel
 {
-    checkArg $1
-    if [ "$?" -eq 1 ]; then
-        addAutoComplete
+    if [ "$#" -eq 2 ]; then
         docker run -d \
-            --name=${CONTAINER_NAME} \
+            --name="$2" \
             -e DISPLAY=$DISPLAY \
-            -v /tmp/.X11-unix:/tmp/.X11-unix \
-            ${IMAGE_NAME} \
-            /bin/sh -c "sed -i "s/CMD_PROMPT_PREFIX=.*$/CMD_PROMPT_PREFIX=$1/" /root/.bashrc && while true; do sleep 10; done"
+            --volume="/tmp/.X11-unix:/tmp/.X11-unix" \
+            --volume="$HOME/.ssh:/root/.ssh" \
+            --volume="$HOME/Downloads:/home/Downloads" \
+            "$1" \
+            /bin/sh -c "sed -i "s/CMD_PROMPT_PREFIX=.*$/CMD_PROMPT_PREFIX=$2/" /root/.bashrc && while true; do sleep 10; done"
+    else
+        echo "Syntax: drunintel image_name container_name"
     fi
-    addAutoComplete
 }
 
 # Stop and remove container
 function drm 
 {
-    checkArg $1
     if [ "$?" -eq 1 ]; then
         echo "Stopping $1"
-        docker stop ${CONTAINER_NAME}
+        docker stop $1
         echo "Removing $1"
-        docker rm ${CONTAINER_NAME}
+        docker rm $1
     else
         echo "Related container names:"
         docker ps --filter ancestor=${IMAGE_NAME}
@@ -111,15 +87,18 @@ function prune
 
 function dbuild
 {
-    prune
-    docker build -t ${IMAGE_NAME} .
+    if [ "$#" -eq 2 ]; then
+        prune
+        docker build -f $1 -t $2 .
+    else
+        echo "Syntax: dbuild Dockerfile tagname"
+    fi
 }
 
 function dexec
 {
-    checkArg $1
     if [ "$?" -eq 1 ]; then
-        docker exec -it ${CONTAINER_NAME} bash
+        docker exec -it $1 bash
     else
         echo "Related container names:"
         docker ps --filter ancestor=${IMAGE_NAME}
