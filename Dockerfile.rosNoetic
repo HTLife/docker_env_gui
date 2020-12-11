@@ -1,0 +1,29 @@
+# docker build -f Dockerfile.ros -t tseanliu/docker_env_gui:ubuntu20_noetic .
+FROM tseanliu/docker_env_gui:ubuntu20
+
+# prevent tzdata ask questions
+ARG DEBIAN_FRONTEND=noninteractive 
+ARG ROS_DISTRO=noetic
+RUN apt-get update && apt-get install -y lsb-release gnupg2 && rm -rf /var/lib/apt/lists/*
+
+# Official command to install ROS melodic
+RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+RUN apt update && apt install -y \
+    ros-${ROS_DISTRO}-desktop-full \
+    python-rosdep python-rosinstall python-rosinstall-generator python-wstool build-essential \
+    && rm -rf /var/lib/apt/lists/*
+RUN echo "" >> ~/.bashrc
+RUN /bin/bash -c "echo 'source /opt/ros/${ROS_DISTRO}/setup.bash' >> ~/.bashrc"
+
+RUN pip install -U catkin_tools
+
+RUN rosdep init
+RUN rosdep update
+
+# set the environment variable back to default
+ARG DEBIAN_FRONTEND=newt
+
+WORKDIR /home
+
+

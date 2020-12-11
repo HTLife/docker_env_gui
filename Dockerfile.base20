@@ -1,6 +1,6 @@
-# docker build -f Dockerfile.base -t tseanliu/docker_env_gui:ubuntu18 .
+# docker build -f Dockerfile.base20 -t tseanliu/docker_env_gui:ubuntu20 .
 
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 # nvidia-container-runtime
 ENV NVIDIA_VISIBLE_DEVICES ${NVIDIA_VISIBLE_DEVICES:-all}
@@ -16,4 +16,3 @@ COPY ./assets/bashrc /root/.bashrc
 COPY ./assets/inputrc /root/.inputrc
 
 WORKDIR /home
-
