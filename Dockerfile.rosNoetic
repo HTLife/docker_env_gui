@@ -1,4 +1,4 @@
-# docker build -f Dockerfile.ros -t tseanliu/docker_env_gui:ubuntu20_noetic .
+# docker build -f Dockerfile.rosNoetic -t tseanliu/docker_env_gui:ubuntu20_noetic .
 FROM tseanliu/docker_env_gui:ubuntu20
 
 # prevent tzdata ask questions
@@ -11,12 +11,13 @@ RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main"
 RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 RUN apt update && apt install -y \
     ros-${ROS_DISTRO}-desktop-full \
-    python-rosdep python-rosinstall python-rosinstall-generator python-wstool build-essential \
+    python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential \
     && rm -rf /var/lib/apt/lists/*
 RUN echo "" >> ~/.bashrc
 RUN /bin/bash -c "echo 'source /opt/ros/${ROS_DISTRO}/setup.bash' >> ~/.bashrc"
 
-RUN pip install -U catkin_tools
+RUN apt-get update && apt-get install -y python3-pip && rm -rf /var/lib/apt/lists/*
+RUN pip3 install -U catkin_tools
 
 RUN rosdep init
 RUN rosdep update
@@ -25,5 +26,3 @@ RUN rosdep update
 ARG DEBIAN_FRONTEND=newt
 
 WORKDIR /home
-
-
