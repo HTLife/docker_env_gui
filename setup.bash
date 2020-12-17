@@ -24,7 +24,7 @@ complete -F _getSupportImages drunintel
 # Run docker on PC with Nvidia GPU
 function drunnvidia()
 {
-    if [ "$?" -eq 2 ]; then
+    if [ "$#" -eq 2 ]; then
     docker run --gpus all -d \
         --name="$2" \
         --env="QT_X11_NO_MITSHM=1" \
