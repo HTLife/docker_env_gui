@@ -27,11 +27,13 @@ function drunnvidia()
     if [ "$#" -eq 2 ]; then
     docker run --gpus all -d \
         --name="$2" \
+	--user "$(id -u):$(id -g)" \
         --env="QT_X11_NO_MITSHM=1" \
         --env="DISPLAY" \
         --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
         --volume="$HOME/.ssh:/root/.ssh" \
         --volume="$HOME/Downloads:/home/Downloads" \
+        --volume="/mnt/data8t:/home/mnt" \
         "$1" \
         /bin/sh -c "sed -i "s/CMD_PROMPT_PREFIX=.*$/CMD_PROMPT_PREFIX=$2/" /root/.bashrc && while true; do sleep 10; done"
     fi
@@ -44,6 +46,7 @@ function drunintel
         docker run -d \
             --name="$2" \
             -e DISPLAY=$DISPLAY \
+	    --user "$(id -u):$(id -g)" \
             --volume="/tmp/.X11-unix:/tmp/.X11-unix" \
             --volume="$HOME/.ssh:/root/.ssh" \
             --volume="$HOME/Downloads:/home/Downloads" \
