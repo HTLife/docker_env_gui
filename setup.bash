@@ -31,7 +31,8 @@ function drunnvidia()
         --env="DISPLAY" \
         --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
         --volume="$HOME/.ssh:/root/.ssh" \
-        --volume="$HOME/Downloads:/home/Downloads" \
+        --volume="$HOME:/home/host" \
+        --user "$(id -u):$(id -g)" \
         "$1" \
         /bin/sh -c "sed -i "s/CMD_PROMPT_PREFIX=.*$/CMD_PROMPT_PREFIX=$2/" /root/.bashrc && while true; do sleep 10; done"
     fi
@@ -41,12 +42,13 @@ function drunnvidia()
 function drunintel
 {
     if [ "$#" -eq 2 ]; then
-        docker run -d \
+        docker run --restart always -d \
             --name="$2" \
             -e DISPLAY=$DISPLAY \
             --volume="/tmp/.X11-unix:/tmp/.X11-unix" \
             --volume="$HOME/.ssh:/root/.ssh" \
-            --volume="$HOME/Downloads:/home/Downloads" \
+            --volume="$HOME:/home/host" \
+            --user "$(id -u):$(id -g)" \
             "$1" \
             /bin/sh -c "sed -i "s/CMD_PROMPT_PREFIX=.*$/CMD_PROMPT_PREFIX=$2/" /root/.bashrc && while true; do sleep 10; done"
     else
